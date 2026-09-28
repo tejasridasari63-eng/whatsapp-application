@@ -1,0 +1,192 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in to WhatsApp</title>
+<style>
+  :root {
+    --green: #25d366;
+    --deep: #075e54;
+    --ink: #111b21;
+    --muted: #667781;
+    --line: #d1d7db;
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --err: #d93025;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e9edef; --muted:#8696a0; --line:#2a3942; --bg:#0b141a; --card:#111b21; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink);
+    min-height: 100vh; display: flex; flex-direction: column;
+  }
+  .band { height: 220px; background: var(--deep); position: absolute; inset: 0 0 auto 0; z-index: 0; }
+  header { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; padding: 24px 32px; color: #fff; font-weight: 600; letter-spacing: .02em; }
+  header svg { width: 32px; height: 32px; }
+  main { position: relative; z-index: 1; flex: 1; display: flex; justify-content: center; padding: 0 16px 32px; }
+  .card { background: var(--card); width: 100%; max-width: 440px; border-radius: 12px; padding: 36px 32px; box-shadow: 0 8px 30px rgba(0,0,0,.15); height: fit-content; margin-top: 24px; }
+  h1 { font-size: 26px; font-weight: 400; margin-bottom: 8px; }
+  .sub { color: var(--muted); font-size: 15px; line-height: 1.45; margin-bottom: 26px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .row { display: flex; gap: 10px; margin-bottom: 6px; }
+  select, input {
+    font: inherit; color: var(--ink); background: transparent;
+    border: 1px solid var(--line); border-radius: 8px; padding: 12px; outline: none; width: 100%;
+  }
+  select { width: 110px; flex: none; }
+  select option { color: #111; }
+  select:focus, input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(37,211,102,.25); }
+  .err { color: var(--err); font-size: 13px; min-height: 18px; margin-bottom: 14px; }
+  button {
+    font: inherit; font-weight: 600; width: 100%; padding: 13px; border: 0; border-radius: 24px;
+    background: var(--green); color: #05301c; cursor: pointer; transition: filter .15s, transform .1s;
+  }
+  button:hover { filter: brightness(.95); }
+  button:active { transform: scale(.98); }
+  button:focus-visible { outline: 3px solid var(--deep); outline-offset: 2px; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .link { background: none; color: var(--deep); width: auto; padding: 4px 0; border-radius: 0; font-weight: 500; text-decoration: underline; }
+  @media (prefers-color-scheme: dark) { .link { color: var(--green); } }
+  .otp { display: flex; gap: 8px; justify-content: space-between; margin-bottom: 8px; }
+  .otp input { width: 100%; text-align: center; font-size: 22px; padding: 12px 0; }
+  .hidden { display: none; }
+  .foot { margin-top: 22px; font-size: 13px; color: var(--muted); text-align: center; display: flex; justify-content: center; align-items: center; gap: 6px; }
+  .done { text-align: center; }
+  .done .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--green); display: grid; place-items: center; margin: 0 auto 16px; }
+  @media (max-width: 480px) { .card { padding: 28px 20px; } header { padding: 18px 20px; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="band"></div>
+<header>
+  <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.2 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.5 1.9 1 .9 1.900 1.200 2.200 1.300.3.1.5.1.6-.1l.9-1.100c.2-.3.4-.2.6-.1l1.900.9c.3.1.5.2.5.3.1.2.1.8-.1 1.400Z"/></svg>
+  WhatsApp
+</header>
+
+<main>
+  <section class="card" aria-live="polite">
+
+    <!-- Step 1: phone number -->
+    <form id="phoneForm" novalidate>
+      <h1>Enter your phone number</h1>
+      <p class="sub">WhatsApp will send a 6-digit code to confirm your number.</p>
+      <label for="cc">Country and phone number</label>
+      <div class="row">
+        <select id="cc" aria-label="Country code">
+          <option value="+1">🇺🇸 +1</option>
+          <option value="+44">🇬🇧 +44</option>
+          <option value="+91" selected>🇮🇳 +91</option>
+          <option value="+49">🇩🇪 +49</option>
+          <option value="+55">🇧🇷 +55</option>
+          <option value="+61">🇦🇺 +61</option>
+          <option value="+81">🇯🇵 +81</option>
+          <option value="+234">🇳🇬 +234</option>
+          <option value="+971">🇦🇪 +971</option>
+        </select>
+        <input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="Phone number" maxlength="12">
+      </div>
+      <p class="err" id="phoneErr" role="alert"></p>
+      <button type="submit">Send code</button>
+      <p class="foot">🔒 Your messages stay end-to-end encrypted</p>
+    </form>
+
+    <!-- Step 2: OTP -->
+    <form id="otpForm" class="hidden" novalidate>
+      <h1>Enter the 6-digit code</h1>
+      <p class="sub">Sent to <strong id="sentTo"></strong>. <button type="button" class="link" id="editNum">Wrong number?</button></p>
+      <div class="otp" id="otp">
+        <input inputmode="numeric" maxlength="1" aria-label="Digit 1">
+        <input inputmode="numeric" maxlength="1" aria-label="Digit 2">
+        <input inputmode="numeric" maxlength="1" aria-label="Digit 3">
+        <input inputmode="numeric" maxlength="1" aria-label="Digit 4">
+        <input inputmode="numeric" maxlength="1" aria-label="Digit 5">
+        <input inputmode="numeric" maxlength="1" aria-label="Digit 6">
+      </div>
+      <p class="err" id="otpErr" role="alert"></p>
+      <button type="submit" id="verifyBtn">Verify</button>
+      <p class="foot"><span id="timer"></span><button type="button" class="link hidden" id="resend">Resend code</button></p>
+    </form>
+
+    <!-- Step 3: success -->
+    <div id="done" class="done hidden">
+      <div class="tick"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div>
+      <h1>You're logged in</h1>
+      <p class="sub">Loading your chats…</p>
+    </div>
+
+  </section>
+</main>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const phoneForm = $('phoneForm'), otpForm = $('otpForm'), done = $('done');
+  const boxes = [...document.querySelectorAll('#otp input')];
+  const DEMO_CODE = '123456'; // Replace with real server-side verification
+  let countdown, secs;
+
+  function show(el) { [phoneForm, otpForm, done].forEach(e => e.classList.toggle('hidden', e !== el)); }
+
+  phoneForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const num = $('phone').value.replace(/\D/g, '');
+    if (num.length < 7 || num.length > 12) {
+      $('phoneErr').textContent = 'Enter a valid phone number (7–12 digits).';
+      return $('phone').focus();
+    }
+    $('phoneErr').textContent = '';
+    $('sentTo').textContent = $('cc').value + ' ' + num;
+    show(otpForm); boxes.forEach(b => b.value = ''); boxes[0].focus(); startTimer();
+    // TODO: call your API here to send the OTP
+  });
+
+  $('phone').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, ''));
+
+  boxes.forEach((b, i) => {
+    b.addEventListener('input', () => {
+      b.value = b.value.replace(/\D/g, '');
+      if (b.value && i < 5) boxes[i + 1].focus();
+    });
+    b.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !b.value && i > 0) boxes[i - 1].focus();
+    });
+    b.addEventListener('paste', e => {
+      const t = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+      if (!t) return;
+      e.preventDefault();
+      [...t].forEach((c, j) => boxes[j].value = c);
+      boxes[Math.min(t.length, 5)].focus();
+    });
+  });
+
+  otpForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const code = boxes.map(b => b.value).join('');
+    if (code.length < 6) { $('otpErr').textContent = 'Enter all 6 digits.'; return; }
+    if (code !== DEMO_CODE) { $('otpErr').textContent = "That code isn't right. Check it and try again."; return; }
+    $('otpErr').textContent = '';
+    clearInterval(countdown); show(done);
+    // TODO: redirect to chats, e.g. location.href = '/chats';
+  });
+
+  function startTimer() {
+    secs = 30; $('resend').classList.add('hidden'); tick();
+    clearInterval(countdown);
+    countdown = setInterval(() => { secs--; tick(); }, 1000);
+  }
+  function tick() {
+    if (secs <= 0) {
+      clearInterval(countdown); $('timer').textContent = ''; $('resend').classList.remove('hidden');
+    } else $('timer').textContent = `Resend code in 0:${String(secs).padStart(2, '0')}`;
+  }
+  $('resend').addEventListener('click', () => { boxes.forEach(b => b.value = ''); boxes[0].focus(); startTimer(); });
+  $('editNum').addEventListener('click', () => { clearInterval(countdown); show(phoneForm); $('phone').focus(); });
+</script>
+</body>
+</html>
+```
